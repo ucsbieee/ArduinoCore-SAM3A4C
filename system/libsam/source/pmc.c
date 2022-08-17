@@ -257,6 +257,7 @@ uint32_t pmc_switch_mck_to_upllck(uint32_t ul_pres)
  */
 void pmc_switch_sclk_to_32kxtal(uint32_t ul_bypass)
 {
+	return; // Don't have external 32kHz crystal on board
 	/* Set Bypass mode if required */
 	if (ul_bypass == 1) {
 		SUPC->SUPC_MR |= SUPC_MR_KEY(SUPC_KEY_VALUE) |

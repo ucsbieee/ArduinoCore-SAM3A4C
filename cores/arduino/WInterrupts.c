@@ -22,8 +22,6 @@ typedef void (*interruptCB)(void);
 
 static interruptCB callbacksPioA[32];
 static interruptCB callbacksPioB[32];
-static interruptCB callbacksPioC[32];
-static interruptCB callbacksPioD[32];
 
 /* Configure PIO interrupt sources */
 static void __initialize() {
@@ -31,8 +29,6 @@ static void __initialize() {
 	for (i=0; i<32; i++) {
 		callbacksPioA[i] = NULL;
 		callbacksPioB[i] = NULL;
-		callbacksPioC[i] = NULL;
-		callbacksPioD[i] = NULL;
 	}
 
 	pmc_enable_periph_clk(ID_PIOA);
@@ -46,18 +42,6 @@ static void __initialize() {
 	NVIC_ClearPendingIRQ(PIOB_IRQn);
 	NVIC_SetPriority(PIOB_IRQn, 0);
 	NVIC_EnableIRQ(PIOB_IRQn);
-
-	pmc_enable_periph_clk(ID_PIOC);
-	NVIC_DisableIRQ(PIOC_IRQn);
-	NVIC_ClearPendingIRQ(PIOC_IRQn);
-	NVIC_SetPriority(PIOC_IRQn, 0);
-	NVIC_EnableIRQ(PIOC_IRQn);
-
-	pmc_enable_periph_clk(ID_PIOD);
-	NVIC_DisableIRQ(PIOD_IRQn);
-	NVIC_ClearPendingIRQ(PIOD_IRQn);
-	NVIC_SetPriority(PIOD_IRQn, 0);
-	NVIC_EnableIRQ(PIOD_IRQn);
 }
 
 
@@ -83,10 +67,6 @@ void attachInterrupt(uint32_t pin, void (*callback)(void), uint32_t mode)
 		callbacksPioA[pos] = callback;
 	if (pio == PIOB)
 		callbacksPioB[pos] = callback;
-	if (pio == PIOC)
-		callbacksPioC[pos] = callback;
-	if (pio == PIOD)
-		callbacksPioD[pos] = callback;
 
 	// Configure the interrupt mode
 	if (mode == CHANGE) {
@@ -151,28 +131,6 @@ void PIOB_Handler(void) {
   {
     uint8_t pin=32-leading_zeros-1;
     if(callbacksPioB[pin]) callbacksPioB[pin]();
-    isr=isr&(~(1<<pin));
-  }
-}
-
-void PIOC_Handler(void) {
-  uint32_t isr = PIOC->PIO_ISR;
-  uint8_t leading_zeros;
-  while((leading_zeros=__CLZ(isr))<32)
-  {
-    uint8_t pin=32-leading_zeros-1;
-    if(callbacksPioC[pin]) callbacksPioC[pin]();
-    isr=isr&(~(1<<pin));
-  }
-}
-
-void PIOD_Handler(void) {
-  uint32_t isr = PIOD->PIO_ISR;
-  uint8_t leading_zeros;
-  while((leading_zeros=__CLZ(isr))<32)
-  {
-    uint8_t pin=32-leading_zeros-1;
-    if(callbacksPioD[pin]) callbacksPioD[pin]();
     isr=isr&(~(1<<pin));
   }
 }

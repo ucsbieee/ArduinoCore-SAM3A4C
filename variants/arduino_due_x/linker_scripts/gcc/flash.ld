@@ -1,30 +1,44 @@
-/* ----------------------------------------------------------------------------
- *         SAM Software Package License
- * ----------------------------------------------------------------------------
- * Copyright (c) 2012, Atmel Corporation
+/**
+ * \file
  *
- * All rights reserved.
+ * \brief Flash Linker script for SAM.
+ *
+ * Copyright (c) 2011-2018 Microchip Technology Inc. and its subsidiaries.
+ *
+ * \asf_license_start
+ *
+ * \page License
  *
  * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following condition is met:
+ * modification, are permitted provided that the following conditions are met:
  *
- * - Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the disclaimer below.
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
  *
- * Atmel's name may not be used to endorse or promote products derived from
- * this software without specific prior written permission.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
  *
- * DISCLAIMER: THIS SOFTWARE IS PROVIDED BY ATMEL "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ * 3. The name of Atmel may not be used to endorse or promote products derived
+ *    from this software without specific prior written permission.
+ *
+ * 4. This software may only be redistributed and used in connection with an
+ *    Atmel microcontroller product.
+ *
+ * THIS SOFTWARE IS PROVIDED BY ATMEL "AS IS" AND ANY EXPRESS OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT ARE
- * DISCLAIMED. IN NO EVENT SHALL ATMEL BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
- * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * ----------------------------------------------------------------------------
+ * EXPRESSLY AND SPECIFICALLY DISCLAIMED. IN NO EVENT SHALL ATMEL BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ * \asf_license_stop
+ *
  */
 
 OUTPUT_FORMAT("elf32-littlearm", "elf32-littlearm", "elf32-littlearm")
@@ -34,17 +48,22 @@ SEARCH_DIR(.)
 /* Memory Spaces Definitions */
 MEMORY
 {
-	rom (rx)    : ORIGIN = 0x00080000, LENGTH = 0x00080000 /* Flash, 512K */
-	sram0 (rwx) : ORIGIN = 0x20000000, LENGTH = 0x00010000 /* sram0, 64K */
+	rom (rx)    : ORIGIN = 0x00080000, LENGTH = 0x00040000 /* Flash, 256K */
+	sram0 (rwx) : ORIGIN = 0x20000000, LENGTH = 0x00008000 /* sram0, 32K */
 	sram1 (rwx) : ORIGIN = 0x20080000, LENGTH = 0x00008000 /* sram1, 32K */
-	ram (rwx)   : ORIGIN = 0x20070000, LENGTH = 0x00018000 /* sram, 96K */
+	ram (rwx)   : ORIGIN = 0x20078000, LENGTH = 0x00010000 /* sram, 64K */
+/*	ram (rwx)   : ORIGIN = ORIGIN( sram1 )-LENGTH( sram0 ), LENGTH = LENGTH( sram0 )+LENGTH( sram1 ) */ /* sram, 64K */
 }
 
-/* Section Definitions */
-SECTIONS
-{
-    .text :
-    {
+/* The stack size used by the application. NOTE: you need to adjust  */
+__stack_size__ = DEFINED(__stack_size__) ? __stack_size__ : 0x2000;
+__ram_end__ = ORIGIN(ram) + LENGTH(ram) - 4;
+
+/* Section Definitions */ 
+SECTIONS 
+{ 
+    .text : 
+    { 
         . = ALIGN(4);
         _sfixed = .;
         KEEP(*(.vectors .vectors.*))
@@ -100,7 +119,7 @@ SECTIONS
     } > rom
     PROVIDE_HIDDEN (__exidx_end = .);
 
-    . = ALIGN(4);
+    . = ALIGN(4); 
     _etext = .;
 
     .relocate : AT (_etext)
@@ -113,9 +132,9 @@ SECTIONS
         _erelocate = .;
     } > ram
 
-    /* .bss section which is used for uninitialized data */
-    .bss ALIGN(4) (NOLOAD) :
-    {
+    /* .bss section which is used for uninitialized data */ 
+    .bss (NOLOAD) :
+    { 
         . = ALIGN(4);
         _sbss = . ;
         _szero = .;
@@ -126,21 +145,16 @@ SECTIONS
         _ezero = .;
     } > ram
 
-    . = ALIGN(4);
-    _end = . ;
-
-    /* .stack_dummy section doesn't contains any symbols. It is only
-       used for linker to calculate size of stack sections, and assign
-       values to stack symbols later */
-    .stack_dummy :
+    /* stack section */
+    .stack (NOLOAD):
     {
-        *(.stack*)
+        . = ALIGN(8);
+         _sstack = .;
+        . = . + __stack_size__;
+        . = ALIGN(8);
+        _estack = .;
     } > ram
 
-    /* Set stack top to end of ram, and stack limit move down by
-     * size of stack_dummy section */
-    __StackTop = ORIGIN(ram) + LENGTH(ram);
-    __StackLimit = __StackTop - SIZEOF(.stack_dummy);
-    PROVIDE(_sstack = __StackLimit);
-    PROVIDE(_estack = __StackTop);
+    . = ALIGN(4); 
+    _end = . ; 
 }

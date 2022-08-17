@@ -1,0 +1,44 @@
+{
+	"packages": [
+		{
+			"name": "UCSB IEEE",
+			"maintainer": "UCSB IEEE",
+			"websiteURL": "https://ucsbieee.org/",
+			"email": "",
+			"help": {
+				"online": "https://github.com/ucsbieee/ArduinoCore-SAM3A4C"
+			},
+			"platforms": [
+				{
+					"name": "UCSB IEEE Tesla Coil Controller",
+					"architecture": "sam",
+					"version": "1.6.12",
+					"category": "Contributed",
+					"help": {
+						"online": "https://github.com/ucsbieee/ArduinoCore-SAM3A4C"
+					},
+					"url": "https://raw.githubusercontent.com/ucsbieee/ArduinoCore-SAM3A4C/master/TC-controller-3A4C.tar.bz2",
+					"archiveFileName": "TC-controller-3A4C.tar.bz2",
+					"checksum": "SHA-256:1da0633fb0664d8c2881209ae1d4a132ccd3994367352cb35a5e535112849f84",
+					"size": "16463291",
+					"boards": [
+						{"name": "Tesla Coil Controller"}
+					],
+					"toolsDependencies": [
+						{
+							"packager": "arduino",
+							"name": "arm-none-eabi-gcc",
+							"version": "4.8.3-2014q1"
+						},
+						{
+							"packager": "arduino",
+							"name": "bossac",
+							"version": "1.6.1-arduino"
+						}
+					]
+				}
+			],
+			"tools": []
+		}
+	]
+}

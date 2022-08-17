@@ -41,7 +41,7 @@ endif
 #-------------------------------------------------------------------------------
 
 # Output directories
-OUTPUT_BIN = ../../../cores/arduino
+OUTPUT_BIN = ../../../variants/arduino_due_x
 
 # Libraries
 PROJECT_BASE_PATH = ..
@@ -62,7 +62,9 @@ CHIP_SERIE=sam3xa
 else ifeq ($(CHIP), __SAM3X8H__)
 CHIP_NAME=sam3x8h
 CHIP_SERIE=sam3xa
-else
+else ifeq ($(CHIP), __SAM3A4C__)
+CHIP_NAME=sam3a4c
+CHIP_SERIE=sam3xa
 endif
 
 CMSIS_ARM_PATH=$(CMSIS_ROOT_PATH)/CMSIS/Include
@@ -165,15 +167,15 @@ create_output:
 
 $(addprefix $(OUTPUT_PATH)/,$(C_OBJ)): $(OUTPUT_PATH)/%.o: %.c
 #	"$(CC)" -v -c $(CFLAGS) -Wa,aln=$(subst .o,.s,$@) $< -o $@
-	@"$(CC)" -c $(CFLAGS) $< -o $@
+	@arm-none-eabi-gcc -c $(CFLAGS) $< -o $@
 #	"$(CC)" -c $(CFLAGS) $< -o $@
 
 $(addprefix $(OUTPUT_PATH)/,$(A_OBJ)): $(OUTPUT_PATH)/%.o: %.s
-	@"$(AS)" -c $(ASFLAGS) $< -o $@
+	@arm-none-eabi-as -c $(ASFLAGS) $< -o $@
 
 $(OUTPUT_LIB): $(addprefix $(OUTPUT_PATH)/, $(C_OBJ)) $(addprefix $(OUTPUT_PATH)/, $(A_OBJ))
-	@"$(AR)" -r "$(OUTPUT_BIN)/$@" $^
-	@"$(NM)" "$(OUTPUT_BIN)/$@" > "$(OUTPUT_BIN)/$@.txt"
+	@arm-none-eabi-ar -r "$(OUTPUT_BIN)/$@" $^
+	@arm-none-eabi-nm "$(OUTPUT_BIN)/$@" > "$(OUTPUT_BIN)/$@.txt"
 
 .PHONY: clean
 clean:
