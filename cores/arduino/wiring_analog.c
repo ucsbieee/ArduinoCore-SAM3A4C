@@ -129,7 +129,7 @@ uint32_t analogRead(uint32_t ulPin)
 	}
 #endif
 
-#if defined __SAM3X8E__ || defined __SAM3X8H__
+#if defined __SAM3X8E__ || defined __SAM3X8H__ || defined __SAM3A4C__
 	static uint32_t latestSelectedChannel = -1;
 	switch ( g_APinDescription[ulPin].ulAnalogChannel )
 	{
