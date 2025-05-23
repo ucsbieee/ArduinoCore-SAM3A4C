@@ -17,9 +17,9 @@
 					"help": {
 						"online": "https://github.com/ucsbieee/ArduinoCore-SAM3A4C"
 					},
-					"url": "https://raw.githubusercontent.com/ucsbieee/ArduinoCore-SAM3A4C/master/TC-controller-3A4C.tar.bz2",
+					"url": "https://github.com/ucsbieee/ArduinoCore-SAM3A4C/releases/latest/download/TC-controller-3A4C.tar.bz2",
 					"archiveFileName": "TC-controller-3A4C.tar.bz2",
-					"checksum": "SHA-256:aff1148711bda819e4c3e4af5a88730b26d6d4cf06f651efc35f933f82c8d19b",
+					"checksum": "SHA-256:ddcf9d5cc989b0dc6920004236700654345bd92a5667857cba0ffd593e9d93e2",
 					"size": "16461198",
 					"boards": [
 						{"name": "Tesla Coil Controller"}
